@@ -89,5 +89,73 @@ class Ebook implements IEbook{
 }
 
 class GerenciarLivraria{
+    private livros: ILivro[] = [];
+
+    adicionarLivro(livro: ILivro): void{
+        this.livros.push(livro);
+        console.log(`O livro ${livro.titulo} foi adicionado à livraria!`);
+    }
+
+    excluirLivro(isbn: number): void {
+        const tamanhoArray = this.livros.length;
+
+        this.livros = this.livros.filter(livro => livro.isbn !== isbn);
     
+        if (this.livros.length < tamanhoArray) {
+            console.log(`O livro com ISBN ${isbn} foi EXCLUÍDO com sucesso.`);
+        } else {
+            console.log(`O livro com ISBN ${isbn} NÃO encontrado.`);
+        }
+    }
+
+    venderLivro(isbn: number, quantidade: number): void {
+        const livro = this.livros.find(book => book.isbn === isbn);
+
+        if (!livro) {
+            console.log(`Livro NÃO encontrado.`);
+            return;
+        }
+
+        if (livro.estoque >= quantidade) {
+            livro.atualizarEstoque(-quantidade);
+            console.log(`Venda REALIZADA com sucesso!`);
+        } else {
+            console.log(`Venda NÃO realizada: Estoque insuficiente.`);
+        }
+    }
+
+    listarLivros(): void {
+        console.log("-------------------------------------");
+        console.log("      INVENTÁRIO DA LIVRARIA");
+        console.log("-------------------------------------");
+        if (this.livros.length === 0) {
+            console.log("Nenhum livro cadastrado no momento.");
+        } else {
+            this.livros.forEach(livro => livro.exibirDados());
+        }
+        console.log("-------------------------------------\n");
+    }
 }
+
+
+const minhaLivraria = new GerenciarLivraria();
+
+const livroFisico1 = new LivroFisico("Homem-Aranha", 2002, 12345, 30.00, "Stan-Lee & Steve Ditko", "Marvel Comics", 20);
+const livroFisico2 = new LivroFisico("O Lula", 2023, 67891, 1.00, "Alexandre de Morais", "Janja", 13);
+const ebook1 = new Ebook("História de Ibn PINTO", 2025, 54321, 40.00, "Ibn Pinto e Silva", "Grupo Jota Pinto", 50, 5);
+
+minhaLivraria.adicionarLivro(livroFisico1);
+minhaLivraria.adicionarLivro(livroFisico2);
+minhaLivraria.adicionarLivro(ebook1);
+console.log("\n");
+
+minhaLivraria.listarLivros();
+
+console.log("--- Realizando Operações ---\n");
+minhaLivraria.venderLivro(12345, 2);
+minhaLivraria.venderLivro(54321, 6);
+minhaLivraria.venderLivro(99999, 1);
+minhaLivraria.excluirLivro(54321);
+console.log("\n");
+
+minhaLivraria.listarLivros();
